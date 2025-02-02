@@ -7,6 +7,8 @@ interface FileItem {
   name: string;
   path: string;
   is_dir: boolean;
+  is_hidden: boolean;
+  created: number; // created time in milliseconds
 }
 
 function App() {
@@ -55,10 +57,17 @@ function App() {
         {files.map((file) => (
           <div
             key={file.path}
-            className={`file-item ${file.is_dir ? "directory" : "file"}`}
+            className={`file-item ${file.is_dir ? "directory" : "file"} ${
+              file.is_hidden ? "hidden-item" : ""
+            }`}
             onClick={() => file.is_dir && navigateToDirectory(file.path)}
           >
-            {file.is_dir ? "📁" : "📄"} {file.name}
+            <div className="file-info">
+              <span className="file-name">
+                {file.is_dir ? "📁" : "📄"} {file.name}
+              </span>
+              <span className="file-time">{new Date(file.created).toLocaleString()}</span>
+            </div>
           </div>
         ))}
       </div>

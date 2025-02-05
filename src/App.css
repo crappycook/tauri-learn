@@ -175,3 +175,24 @@ button {
   font-size: 0.9em;
   margin-left: 20px;
 }
+
+.controls {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.hidden-checkbox {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  cursor: pointer;
+}

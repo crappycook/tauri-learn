@@ -10,6 +10,7 @@ function App() {
   const [currentPath, setCurrentPath] = useState(platformName === "windows" ? "C:\\" : "/");
   const [files, setFiles] = useState<FileItemData[]>([]);
   const [error, setError] = useState<string>("");
+  const [showHidden, setShowHidden] = useState(false);
 
   async function loadDirectory(path: string) {
     try {
@@ -33,19 +34,32 @@ function App() {
     navigateToDirectory(currentPath.split(/[\\/]/).slice(0, -1).join("/") || "/");
   };
 
+  const filteredFiles = showHidden ? files : files.filter((file) => !file.is_hidden);
+
   return (
     <div className="container">
       <h1>File Explorer</h1>
 
       <div className="current-path">
         <p>Current Path: {currentPath}</p>
-        <button onClick={handleGoUp}>Go Up</button>
+        <div className="controls">
+          <label className="checkbox-label">
+            <input
+              type="checkbox"
+              checked={showHidden}
+              onChange={(e) => setShowHidden(e.target.checked)}
+              className="hidden-checkbox"
+            />
+            Show hidden files
+          </label>
+          <button onClick={handleGoUp}>Go Up</button>
+        </div>
       </div>
 
       {error && <div className="error">{error}</div>}
 
       <div className="file-list">
-        {files.map((file) => (
+        {filteredFiles.map((file) => (
           <FileItem key={file.path} item={file} onNavigate={navigateToDirectory} />
         ))}
       </div>

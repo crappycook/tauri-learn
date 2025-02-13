@@ -1,6 +1,8 @@
 import { FileItemData } from "../types";
 import { format } from "date-fns";
 import { openPath } from "@tauri-apps/plugin-opener";
+import { invoke } from "@tauri-apps/api/core";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 
 export function FileItem({
   item,
@@ -9,7 +11,7 @@ export function FileItem({
   item: FileItemData;
   onNavigate: (path: string) => void;
 }) {
-  const handleDoubleClick = async () => {
+  const handleClick = async () => {
     if (item.is_dir) {
       onNavigate(item.path);
     } else {
@@ -21,13 +23,30 @@ export function FileItem({
     }
   };
 
+  const handleContextMenu = async (e: React.MouseEvent) => {
+    e.preventDefault();
+
+    const { clientX: x, clientY: y } = e;
+    const window = getCurrentWindow();
+
+    try {
+      await invoke("show_context_menu", {
+        x: x * (await window.scaleFactor()),
+        y: y * (await window.scaleFactor()),
+      });
+    } catch (error) {
+      console.error("Failed to show context menu:", error);
+    }
+  };
+
   return (
     <div
       className={`file-item ${item.is_dir ? "directory" : "file"} ${
         item.is_hidden ? "hidden-item" : ""
       }`}
-      onDoubleClick={handleDoubleClick}
-      title={item.is_dir ? "Double click to open folder" : "Double click to open file"}
+      onClick={handleClick}
+      onContextMenu={handleContextMenu}
+      title={item.is_dir ? "Click to open folder" : "Click to open file"}
     >
       <div className="file-info">
         <span className="file-name">
